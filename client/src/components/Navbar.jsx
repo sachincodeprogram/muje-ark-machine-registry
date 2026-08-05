@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import arkLogo from '../assets/ark-logo.png';
 
 function navLinkClass({ isActive }) {
   return `navbar__link${isActive ? ' navbar__link--active' : ''}`;
@@ -9,10 +10,11 @@ function Navbar() {
     <header className="navbar">
       <div className="navbar__inner">
         <NavLink to="/" end className="navbar__brand">
-          <span className="navbar__mark" aria-hidden="true">
-            ARK
+          <img src={arkLogo} alt="ARK Group" className="navbar__mark" />
+          <span className="navbar__brand-text">
+            ARK Machine Registry
+            <span className="navbar__brand-subtext">Sales Department</span>
           </span>
-          <span className="navbar__brand-text">Machine Registry</span>
         </NavLink>
 
         <nav className="navbar__links" aria-label="Primary">

@@ -25,7 +25,7 @@ function asyncHandler(fn) {
 router.post(
   '/',
   asyncHandler(async (req, res) => {
-    const { sellerCompanyName, machineName, modelNumber, saleDate } = req.body ?? {};
+    const { sellerCompanyName, machineName, modelNumber, serialNumber, saleDate } = req.body ?? {};
 
     const validationErrors = [];
     if (!isNonEmptyString(sellerCompanyName)) {
@@ -37,6 +37,9 @@ router.post(
     if (!isNonEmptyString(modelNumber)) {
       validationErrors.push('modelNumber is required and must be a non-empty string');
     }
+    if (!isNonEmptyString(serialNumber)) {
+      validationErrors.push('serialNumber is required and must be a non-empty string');
+    }
     if (!isValidDate(saleDate)) {
       validationErrors.push('saleDate is required and must be a valid date');
     }
@@ -45,10 +48,19 @@ router.post(
       return res.status(400).json({ error: 'Validation failed', details: validationErrors });
     }
 
+    const normalizedSerial = serialNumber.trim().toUpperCase();
+    const existing = await Machine.findOne({ serialNumber: normalizedSerial }).lean();
+    if (existing) {
+      return res.status(409).json({
+        error: `Serial number "${normalizedSerial}" is already registered (${existing.uniqueId})`,
+      });
+    }
+
     const machine = new Machine({
       sellerCompanyName: sellerCompanyName.trim(),
       machineName: machineName.trim(),
       modelNumber: modelNumber.trim(),
+      serialNumber: normalizedSerial,
       saleDate: new Date(saleDate),
     });
 
@@ -59,6 +71,26 @@ router.post(
       uniqueId: machine.uniqueId,
       machine,
     });
+  })
+);
+
+// GET /api/machines/serial/:serialNumber
+router.get(
+  '/serial/:serialNumber',
+  asyncHandler(async (req, res) => {
+    const serialNumber = req.params.serialNumber.trim().toUpperCase();
+
+    if (!serialNumber) {
+      return res.status(400).json({ error: 'serialNumber is required' });
+    }
+
+    const machine = await Machine.findOne({ serialNumber });
+
+    if (!machine) {
+      return res.status(404).json({ error: `Machine with serial number "${serialNumber}" not found` });
+    }
+
+    return res.status(200).json(machine);
   })
 );
 

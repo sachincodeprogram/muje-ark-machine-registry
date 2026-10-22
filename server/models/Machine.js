@@ -40,6 +40,12 @@ const machineSchema = new Schema(
       required: true,
       trim: true,
     },
+    serialNumber: {
+      type: String,
+      required: true,
+      trim: true,
+      uppercase: true,
+    },
     saleDate: {
       type: Date,
       required: true,
@@ -55,6 +61,11 @@ const machineSchema = new Schema(
 );
 
 machineSchema.index({ uniqueId: 1 }, { unique: true });
+// Partial so machines registered before serial numbers existed don't collide on a missing value.
+machineSchema.index(
+  { serialNumber: 1 },
+  { unique: true, partialFilterExpression: { serialNumber: { $type: 'string' } } }
+);
 
 // Generate a unique "ARK-YYYYMMDD-XXXX" id before validation, retrying on the
 // rare chance of a collision with an existing record for the same day.

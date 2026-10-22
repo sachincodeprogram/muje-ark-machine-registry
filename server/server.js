@@ -40,8 +40,9 @@ app.use((err, req, res, next) => {
   }
 
   if (err.code === 11000) {
+    const field = Object.keys(err.keyValue || {})[0] === 'serialNumber' ? 'serial number' : 'uniqueId';
     return res.status(409).json({
-      error: 'A machine with this uniqueId already exists',
+      error: `A machine with this ${field} already exists`,
       details: err.keyValue,
     });
   }

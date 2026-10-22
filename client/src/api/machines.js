@@ -38,10 +38,18 @@ export async function registerMachine(payload) {
   return data;
 }
 
-export async function fetchMachineByUniqueId(uniqueId) {
+export function fetchMachineByUniqueId(uniqueId) {
+  return fetchMachine(`/api/machines/${encodeURIComponent(uniqueId)}`);
+}
+
+export function fetchMachineBySerialNumber(serialNumber) {
+  return fetchMachine(`/api/machines/serial/${encodeURIComponent(serialNumber)}`);
+}
+
+async function fetchMachine(path) {
   let response;
   try {
-    response = await fetch(`${API_BASE_URL}/api/machines/${encodeURIComponent(uniqueId)}`);
+    response = await fetch(`${API_BASE_URL}${path}`);
   } catch {
     throw new Error(NETWORK_ERROR_MESSAGE);
   }

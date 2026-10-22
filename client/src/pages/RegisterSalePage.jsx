@@ -11,6 +11,7 @@ const INITIAL_FORM = {
   sellerCompanyName: '',
   machineName: '',
   modelNumber: '',
+  serialNumber: '',
   saleDate: '',
 };
 
@@ -25,6 +26,9 @@ function validate(form) {
   }
   if (!form.modelNumber.trim()) {
     errors.modelNumber = 'Model number is required.';
+  }
+  if (!form.serialNumber.trim()) {
+    errors.serialNumber = 'Serial number is required.';
   }
   if (!form.saleDate) {
     errors.saleDate = 'Sale date is required.';
@@ -64,6 +68,7 @@ function RegisterSalePage() {
         sellerCompanyName: form.sellerCompanyName.trim(),
         machineName: form.machineName.trim(),
         modelNumber: form.modelNumber.trim(),
+        serialNumber: form.serialNumber.trim(),
         saleDate: form.saleDate,
       });
       setResult(data);
@@ -176,6 +181,19 @@ function RegisterSalePage() {
               value={form.modelNumber}
               onChange={handleChange}
               placeholder="e.g. HP-4500X"
+              autoComplete="off"
+            />
+          </FormField>
+
+          <FormField label="Serial Number" id="serialNumber" error={errors.serialNumber}>
+            <input
+              id="serialNumber"
+              name="serialNumber"
+              type="text"
+              className={`form-input${errors.serialNumber ? ' form-input--invalid' : ''}`}
+              value={form.serialNumber}
+              onChange={handleChange}
+              placeholder="e.g. SN-4587-XK"
               autoComplete="off"
             />
           </FormField>
